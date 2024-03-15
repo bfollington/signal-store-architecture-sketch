@@ -32,8 +32,8 @@ export function succeedLoadUserProfile(user: User) {
   return { type: "succeedLoadUserProfile" as const, payload: { user } };
 }
 
-export function failLoadUserProfile(error: Error) {
-  return { type: "failLoadUserProfile" as const, payload: { error } };
+export function failLoadUserProfile(userId: UserId, error: Error) {
+  return { type: "failLoadUserProfile" as const, payload: { userId, error } };
 }
 
 type UserProfileStoreAction =
@@ -95,7 +95,7 @@ export class UserProfileStore
           ...state,
           users: {
             ...state.users,
-            [action.payload.error.message]: {
+            [action.payload.userId]: {
               status: "failed",
               error: action.payload.error,
             },
