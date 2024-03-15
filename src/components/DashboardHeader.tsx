@@ -1,7 +1,14 @@
 import { useValue } from "signia-react";
 import { env } from "../env";
+import ToggleSection from "./ToggleSection";
 
 export default function DashboardHeader() {
   const profile = useValue(env.authorizedUserProfile.profile);
-  return profile ? <p>Welcome, {profile.name}</p> : null;
+
+  return (
+    <div>
+      {profile && <p>Welcome, {profile.name}</p>}
+      <ToggleSection>Collapsible detail with local state.</ToggleSection>
+    </div>
+  );
 }

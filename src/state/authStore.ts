@@ -1,6 +1,7 @@
-import { Atom, atom } from "signia";
+import { atom } from "signia";
 import { UserId } from "./userProfileStore";
 import { runFx } from "./fx";
+import { Store } from "./store";
 
 type AuthenticationStoreState = {
   status: "unauthorized" | "pending" | "authorized";
@@ -37,11 +38,6 @@ type AuthenticationStoreAction =
   | ReturnType<typeof succeedAuthorization>
   | ReturnType<typeof failAuthorization>
   | ReturnType<typeof expireAuthorization>;
-
-interface Store<State, Action> {
-  state: Atom<State, unknown>;
-  send: (action: Action) => void;
-}
 
 export class AuthorizationStore
   implements Store<AuthenticationStoreState, AuthenticationStoreAction>

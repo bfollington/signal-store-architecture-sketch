@@ -1,10 +1,14 @@
+import { useEffect } from "react";
 import "./App.css";
 import AuthStatus from "./AuthStatus";
 import DashboardHeader from "./components/DashboardHeader";
 import AuthControls from "./components/auth/AuthControls";
 import AuthenticatedContent from "./components/auth/AuthenticatedContent";
+import { register as registerMouse } from "./state/mouse";
 
 function App() {
+  useEffect(registerMouse, []);
+
   return (
     <>
       <AuthStatus />

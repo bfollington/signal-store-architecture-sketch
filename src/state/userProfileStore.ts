@@ -1,5 +1,6 @@
-import { Atom, atom } from "signia";
+import { atom } from "signia";
 import { runFx } from "./fx";
+import { Store } from "./store";
 
 export type UserId = string;
 
@@ -39,11 +40,6 @@ type UserProfileStoreAction =
   | ReturnType<typeof requestLoadUserProfile>
   | ReturnType<typeof succeedLoadUserProfile>
   | ReturnType<typeof failLoadUserProfile>;
-
-interface Store<State, Action> {
-  state: Atom<State, unknown>;
-  send: (action: Action) => void;
-}
 
 export class UserProfileStore
   implements Store<UserProfileStoreState, UserProfileStoreAction>
