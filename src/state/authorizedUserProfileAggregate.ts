@@ -1,7 +1,11 @@
 import { computed, react } from "signia";
 import { AuthorizationStore } from "./authStore";
-import { runFx } from "./fx";
-import { UserProfileStore, requestLoadUserProfile } from "./userProfileStore";
+import * as Fx from "./fx";
+import {
+  UserId,
+  UserProfileStore,
+  requestLoadUserProfile,
+} from "./userProfileStore";
 
 // This is designed to demonstrate how to compose multiple stores together for higher order behaviour
 // We listen for auth, request the authed users profile and then expose the profile as a computed value
@@ -12,6 +16,10 @@ export class AuthorizedUserProfileAggregate {
     private authorizationStore: AuthorizationStore
   ) {}
 
+  loadAuthenticatedUserProfileFx = function* (userId: UserId) {
+    yield* Fx.send(requestLoadUserProfile(userId));
+  };
+
   // on auth, fetch our profile
   loadProfileOnAuth = react("loadProfileOnAuth", async () => {
     const userId = this.authorizationStore.state.value.session?.userId;
@@ -19,9 +27,7 @@ export class AuthorizedUserProfileAggregate {
       return;
     }
 
-    runFx(() => {
-      this.profileStore.send(requestLoadUserProfile(userId));
-    });
+    Fx.run(this.loadAuthenticatedUserProfileFx(userId), this.profileStore);
   });
 
   profile = computed("authorizedUserProfile", () => {

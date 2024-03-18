@@ -1,5 +1,5 @@
 import { atom } from "signia";
-import { runFx } from "./fx";
+import * as Fx from "./fx";
 import { Store } from "./store";
 
 export type UserId = string;
@@ -46,19 +46,16 @@ export class UserProfileStore
 {
   state = atom("userStore", initialState);
 
-  loadProfileFx(userId: string) {
-    return async () => {
-      // imagine it was HTTP
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      this.send(
-        succeedLoadUserProfile({
-          id: userId,
-          name: "John Doe",
-          email: "john@doe.com",
-        })
-      );
-    };
-  }
+  loadProfileFx = function* (userId: UserId) {
+    yield* Fx.sleep(1000);
+    yield* Fx.send(
+      succeedLoadUserProfile({
+        id: userId,
+        name: "John Doe",
+        email: "john@doe.com",
+      })
+    );
+  };
 
   send(action: UserProfileStoreAction) {
     switch (action.type) {
@@ -73,9 +70,7 @@ export class UserProfileStore
           },
         }));
 
-        // this could be abstracted with an effect runner, or just run inline etc.
-        // this is just an example
-        runFx(this.loadProfileFx(action.payload.userId));
+        Fx.run(this.loadProfileFx(action.payload.userId), this);
         break;
 
       case "succeedLoadUserProfile":

@@ -1,6 +1,6 @@
 import { atom } from "signia";
 import { UserId } from "./userProfileStore";
-import { runFx } from "./fx";
+import * as Fx from "./fx";
 import { Store } from "./store";
 
 type AuthenticationStoreState = {
@@ -44,18 +44,18 @@ export class AuthorizationStore
 {
   state = atom("authorizationStore", initialState);
 
-  attemptAuthFx(credential: string) {
-    return async () => {
-      // imagine it was HTTP
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      this.send(
-        succeedAuthorization({
-          userId: "123",
-          expiresAt: Date.now() + 1000 * 60 * 60,
-        })
-      );
+  attemptAuthFx = function* (credential: string) {
+    yield () => {
+      console.log(credential);
     };
-  }
+    yield* Fx.sleep(1000);
+    yield* Fx.send(
+      succeedAuthorization({
+        userId: "123",
+        expiresAt: Date.now() + 1000 * 60 * 60,
+      })
+    );
+  };
 
   send(action: AuthenticationStoreAction) {
     switch (action.type) {
@@ -65,7 +65,7 @@ export class AuthorizationStore
           status: "pending",
         }));
 
-        runFx(this.attemptAuthFx(action.payload.credential));
+        Fx.run(this.attemptAuthFx(action.payload.credential), this);
         break;
 
       case "succeedAuthorization":
